@@ -1,0 +1,74 @@
+---
+title: "QM_assignment_5"
+output: pdf_document
+date: "2022-11-07"
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+#In light of objective function and restrictions, such as employment levels and corporate revenues, the Emax corporation's goal is to maximize profit of new items.
+
+#Libraries  for the current environment
+```{r}
+library(lpSolve)
+library(lpSolveAPI)
+library(goalprog)
+```
+
+#Where #P = total (discounted) profit over the life of the new products, the objective function #Maximize Z = P - 6C - 3D,
+#C = Change (in either direction) in the level of employment at the moment, and #D = Decrease (if any) in earnings from the level of the present year in the following year.
+
+
+#Each new product's lptable is displayed in the table.
+```{r}
+lp_table<- matrix(c("Total Profit", "Employment Level", "Earnings Next Year",
+                       20,6,8,
+                       15,4,7,
+                       25,5,5,
+                       "Maximize","=50",">=75",
+                       "Millions of Dollars", "Hundreds of Employees", "Millions of Dollars"), ncol=6, byrow = F)
+colnames(lp_table) <- c("Factor","Product 1", "Product 2", "Product 3", "Goal", "Units")
+as.table(lp_table)
+```
+
+#Under goal programming, the objective functions were imported via a Lp file. The formulations utilized for the objective function and constraints to the lp formulation are as follows:
+
+#Maximum objective function: 20x1, 15x2, and 25x3 - 6y1m, 6y1p, and 3y2m;
+
+#Constraints
+#6x1 + 4x2 + 5x3 + y1m - y1p = 50;
+#8x1 + 7x2 + 5x3 + y2m - y2p = 75;
+
+```{r}
+getwd()
+setwd("/Users/bharathreddy/Desktop")
+lp<-read.lp("gp.lp")
+lp
+```
+
+#Goal programming model 
+```{r}
+solve(lp)
+```
+#The result of the formulation of lp is 0, indicating success.
+
+# Purposeful action to maximize profit.
+```{r}
+get.objective(lp)
+```
+
+#Variable value of goal programming model
+```{r}
+get.variables(lp)
+```
+
+#interpretation
+#1. From above, it is evident that X3 has undergone a metamorphosis. The only product that the company can create, 15 units of Product 3, is the one that will maximize profit.
+
+#2.The firm's employment levels were exceeded by 25 hundred employees despite the fact that the maximum number of employees was 50 hundred, as per the restrictions outlined above.
+
+#3. The intention of Y2P and Y2M was to detect any variances in earnings for the next year. According to the formulation above, it exhibited no deviations.
+
+#4. The company is maximizing a 225 million dollar profit.
